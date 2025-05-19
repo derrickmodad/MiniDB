@@ -6,5 +6,4 @@ int main() {
     printHello();
     std::cout << ' ';
     printWorld();
-    return 0;
 }
