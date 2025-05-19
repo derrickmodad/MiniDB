@@ -5,6 +5,4 @@
 #ifndef DATABASE_HPP
 #define DATABASE_HPP
 
-void printHello();
-
 #endif //DATABASE_HPP

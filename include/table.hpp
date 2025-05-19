@@ -5,6 +5,4 @@
 #ifndef TABLE_HPP
 #define TABLE_HPP
 
-void printWorld();
-
 #endif //TABLE_HPP

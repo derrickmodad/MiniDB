@@ -3,7 +3,5 @@
 #include "table.hpp"
 
 int main() {
-    printHello();
-    std::cout << ' ';
-    printWorld();
+    std::cout << "Placeholder" << std::endl;
 }
