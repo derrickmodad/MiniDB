@@ -5,4 +5,11 @@
 #ifndef TABLE_HPP
 #define TABLE_HPP
 
+#include "record.hpp"
+#include <vector>
+
+void writeRecord(Record &record);
+
+std::vector<Record> readRecords();
+
 #endif //TABLE_HPP
