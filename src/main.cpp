@@ -4,29 +4,23 @@
 #include "table.hpp"
 #include "record.hpp"
 
-std::vector<Record> generateRecords();
-
-int main() {
-    auto receive = generateRecords();
-    for (auto & i : receive) {
-        // std::cout << i.id << ' ' << i.firstName << ' ' << i.lastName << std::endl;
-        writeRecord(i);
-    }
-
-    auto records = readRecords();
-    for (auto & i : records) {
-        std::cout << i.id << ' ' << i.firstName << ' ' << i.lastName << std::endl;
+void printTable(Table& table) {
+    table.loadFromFile();
+    auto records = table.getRecords();
+    for (auto record : records) {
+        std::cout << record.id << record.firstName << record.lastName << std::endl;
     }
 }
 
-std::vector<Record> generateRecords() {
-    std::vector<Record> records;
+int main() {
+    Table employees("Employees");
+    employees.insertRecord(createRecord(0, "Derrick", "Modad"));
+    employees.saveToFile();
 
-    //generate vector of records for testing
-    Record record = createRecord(0, "Derrick", "Modad");
-    records.push_back(record);
-    record = createRecord(1, "Test", "Test");
-    records.push_back(record);
+    Table employees2("Employees2");
+    employees2.insertRecord(createRecord(1, "Derrick", "Modad"));
+    employees2.saveToFile();
 
-    return records;
+    printTable(employees);
+    printTable(employees2);
 }

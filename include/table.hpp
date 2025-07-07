@@ -7,9 +7,19 @@
 
 #include "record.hpp"
 #include <vector>
+#include <string>
 
-void writeRecord(Record &record);
-
-std::vector<Record> readRecords();
+class Table {
+private:
+    std::string tableName;
+    std::string tableFile;
+    std::vector<Record> records;
+public:
+    Table(std::string name);
+    void insertRecord(Record record);
+    void saveToFile();
+    void loadFromFile();
+    std::vector<Record> getRecords();
+};
 
 #endif //TABLE_HPP
