@@ -5,6 +5,8 @@
 #ifndef TABLE_HPP
 #define TABLE_HPP
 
+#include <functional>
+
 #include "record.hpp"
 #include <vector>
 #include <string>
@@ -16,10 +18,20 @@ private:
     std::vector<Record> records;
 public:
     Table(std::string name);
+
+    //record insertion and viewing
     void insertRecord(Record record);
+    std::vector<Record> getRecords();
+    void printRecord(Record& record);
+
+    //save and load
     void saveToFile();
     void loadFromFile();
-    std::vector<Record> getRecords();
+
+    //select, delete, update
+    std::vector<Record> selectWhere(std::function<bool(const Record&)> comparator);
+    void deleteWhere(std::function<bool(const Record&)> comparator);
+    void updateWhere(std::function<bool(const Record&)> comparator, std::function<void(const Record&)> updater);
 };
 
 #endif //TABLE_HPP
