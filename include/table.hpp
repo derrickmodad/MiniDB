@@ -29,9 +29,9 @@ public:
     void loadFromFile();
 
     //select, delete, update
-    std::vector<Record> selectWhere(std::function<bool(const Record&)> comparator);
+    std::vector<Record> selectWhere(std::function<bool(const Record&)> comparator) const;
     void deleteWhere(std::function<bool(const Record&)> comparator);
-    void updateWhere(std::function<bool(const Record&)> comparator, std::function<void(const Record&)> updater);
+    void updateWhere(std::function<bool(const Record&)> comparator, std::function<void(Record&)> updater);
 };
 
 #endif //TABLE_HPP

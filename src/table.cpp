@@ -4,6 +4,7 @@
 
 #include "table.hpp"
 #include <fstream>
+#include <iostream>
 
 Table::Table(std::string name) {
     tableName = name;
@@ -18,7 +19,7 @@ std::vector<Record> Table::getRecords() {
     return records;
 }
 
-void printRecord(Record& record) {
+void Table::printRecord(Record& record) {
     std::cout << record.id << ' ' << record.firstName << ' ' << record.lastName << std::endl;
 }
 
@@ -40,7 +41,7 @@ void Table::loadFromFile() {
     inFile.close();
 }
 
-std::vector<Record> Table::selectWhere(std::function<bool(const Record &)> comparator) {
+std::vector<Record> Table::selectWhere(std::function<bool(const Record &)> comparator) const {
     std::vector<Record> results;
     for (auto& record : records) {
         if (comparator(record)) {
@@ -55,8 +56,12 @@ void Table::deleteWhere(std::function<bool(const Record &)> comparator) {
     //opting here for manual call to saveToFile to prevent unwanted changes
 }
 
-void Table::updateWhere(std::function<bool(const Record &)> comparator, std::function<void(const Record &)> updater) {
-
+void Table::updateWhere(std::function<bool(const Record &)> comparator, std::function<void(Record &)> updater) {
+    for (auto& record : records) {
+        if (comparator(record)) {
+            updater(record);
+        }
+    }
 }
 
 
