@@ -4,23 +4,29 @@
 #include "table.hpp"
 #include "record.hpp"
 
-void printTable(Table& table) {
-    table.loadFromFile();
-    auto records = table.getRecords();
-    for (auto record : records) {
-        std::cout << record.id << record.firstName << record.lastName << std::endl;
-    }
-}
-
 int main() {
     Table employees("Employees");
     employees.insertRecord(createRecord(0, "Derrick", "Modad"));
+    employees.insertRecord(createRecord(1, "John", "Smith"));
+    employees.insertRecord(createRecord(2, "Mary", "Jane"));
     employees.saveToFile();
 
-    Table employees2("Employees2");
-    employees2.insertRecord(createRecord(1, "Derrick", "Modad"));
-    employees2.saveToFile();
+    auto matches = employees.selectWhere([](const Record& record) { return record.id == 0;});
+    for (auto& match : matches) {
+        std::cout << match.firstName << std::endl;
+    }
 
-    printTable(employees);
-    printTable(employees2);
+    employees.deleteWhere([](const Record& record) { return record.id == 1;});
+    employees.saveToFile();
+
+    employees.updateWhere([](const Record& record) {return record.id == 2;},
+        [](Record& record) {
+            std::strncpy(record.lastName, "Doe", sizeof(record.lastName));
+            std::strncpy(record.firstName, "Jane", sizeof(record.firstName));
+        });
+
+    auto records = employees.getRecords();
+    for (auto& record: records) {
+        employees.printRecord(record);
+    }
 }
