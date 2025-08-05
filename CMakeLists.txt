@@ -10,6 +10,7 @@ set(SOURCES
         src/database.cpp
         src/table.cpp
         src/record.cpp
+        src/cli.cpp
 )
 
 add_executable(MiniDB ${SOURCES})

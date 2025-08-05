@@ -17,7 +17,7 @@ Record createRecord(unsigned int id, char firstName[], char lastName[]) {
 
 void serialize(std::ofstream &out, Record &record) {
     if (!out) {
-        std::cerr << "Error opening file" << std::endl;
+        std::cout << "Error opening file" << std::endl;
         return;
     }
     out.write(reinterpret_cast<const char *>(&record.id), sizeof(record.id));
@@ -27,7 +27,7 @@ void serialize(std::ofstream &out, Record &record) {
 
 bool deserialize(std::ifstream &in, Record &record) {
     if (!in) {
-        std::cerr << "Error opening file" << std::endl;
+        std::cout << "Error opening file" << std::endl;
     } else {
         in.read(reinterpret_cast<char *>(&record.id), sizeof(record.id));
         in.read(record.firstName, sizeof(record.firstName));
