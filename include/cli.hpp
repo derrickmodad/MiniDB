@@ -14,9 +14,7 @@
 
 class CLI {
 private:
-    std::unordered_map<std::string, Table> tables;
-    std::string currentTable;
-
+    Table* currentTable;
     bool CLIActive;
     //key - string, value - command handler (with return type string)
     //  note: the command handler will call the actual command function built in table.cpp and unpack its return value (if applicable)

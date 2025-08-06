@@ -8,6 +8,7 @@
 #include "record.hpp"
 #include "table.hpp"
 #include <unordered_map>
+#include <string>
 
 class Database {
 private:
@@ -15,7 +16,9 @@ private:
 
 public:
     Database();
-    //how to share the tables in the map? i don't know about sharing a pointer
+    ~Database();
+    Table* lookupTable(std::string);
+    bool saveTableFile();
 };
 
 #endif //DATABASE_HPP

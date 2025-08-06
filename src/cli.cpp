@@ -128,6 +128,7 @@ std::string CLI::helpHandler(const std::vector<std::string>& args) {
 CLI::CLI() {
     //constructor
     //build command table
+    currentTable = nullptr;
     setup();
     CLIActive = true;
     runCLI();
@@ -150,3 +151,5 @@ void CLI::registerCommand(const std::string & name, const std::function<std::str
 //adding will mimic registerCommand to ensure duped tables don't exist
 
 //will use method to call in database engine to find table and set active in CLI
+
+//so useHandler calls lookupTable and will either receive reference to table or nullptr if not found
