@@ -98,6 +98,26 @@ void CLI::setup() {
     });
 }
 
+std::string CLI::useHandler(const std::vector<std::string>& args) {
+    //may need to save here before switching
+    Table* lastUsed = currentTable; //this should save a pointer to the table before switching so it can be saved if switch is successful
+    if (!args.size() != 2) {
+        return "syntax error - expected: use <table name>";
+    }
+    currentTable = db.lookupTable(args[1]);
+    if (currentTable == nullptr) {
+        currentTable = lastUsed;
+        return "error: table not found";
+    }
+    lastUsed->saveToFile();
+    currentTable->loadFromFile();
+    return "success";
+}
+
+std::string CLI::createHandler(const std::vector<std::string>& args) {
+
+}
+
 std::string CLI::insertHandler(const std::vector<std::string>& args) {
     return "not yet built";
 }
@@ -125,7 +145,7 @@ std::string CLI::helpHandler(const std::vector<std::string>& args) {
     return "Invalid syntax: help <command> (not yet built)";
 }
 
-CLI::CLI() {
+CLI::CLI(Database& db) : db(db) {
     //constructor
     //build command table
     currentTable = nullptr;

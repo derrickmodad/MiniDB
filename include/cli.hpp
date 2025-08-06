@@ -6,6 +6,7 @@
 #define CLI_HPP
 
 #include "table.hpp"
+#include "database.hpp"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -14,6 +15,7 @@
 
 class CLI {
 private:
+    Database& db;
     Table* currentTable;
     bool CLIActive;
     //key - string, value - command handler (with return type string)
@@ -34,7 +36,7 @@ private:
     std::string exitHandler(const std::vector<std::string>&);
     std::string helpHandler(const std::vector<std::string>&);
 public:
-    CLI();
+    CLI(Database&);
     void registerCommand(const std::string&, const std::function<std::string(const std::vector<std::string>&)>&); //individual registering of commands, left public for extensibility
 };
 
