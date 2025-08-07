@@ -27,7 +27,7 @@ Database::Database() {
     std::ifstream inDBTableFile("dbTableFile.txt",std::ios::in);
     std::string tableName;
     while (getline(inDBTableFile, tableName)) {
-        tables[tableName] = Table(tableName);
+        appendTable(tableName);
         //opting for manual load rn, but could do this: tables[tableName].loadFromFile();
     }
     inDBTableFile.close();
@@ -41,8 +41,9 @@ Database::~Database() {
 
 //checks for table in map, returns if found, else returns nullptr
 Table *Database::lookupTable(std::string query) {
-    if (tables.find(query) != tables.end()) {
-        return &(tables[query]);
+    auto it =  tables.find(query);
+    if (it != tables.end()) {
+        return &(it->second);
     }
     return nullptr;
 }
@@ -60,7 +61,7 @@ bool Database::saveTableFile() {
 }
 
 void Database::appendTable(std::string newTable) {
-    tables[newTable] = Table(newTable);
+    tables.emplace(newTable, Table(newTable));
 }
 
 
