@@ -29,57 +29,19 @@ bool CLI::requiredArgumentsPresent(int args, int expected) {
 }
 
 void CLI::runCLI() {
-    Table employees("Employees");
     std::string command;
     std::vector<std::string> args;
     do {
         std::cout << "> " << std::flush;
         std::getline(std::cin, command);
         args = split(command, ' ');
-        if (args[0] == "insert") {
-            if (requiredArgumentsPresent(args.size() - 1, 3)) {
-                Record r;
-                employees.insertRecord(
-                    createRecord(std::stoi(args[1]),
-                    std::strncpy(r.firstName, args[2].c_str(), sizeof(r.firstName)),
-                    std::strncpy(r.lastName, args[3].c_str(), sizeof(r.lastName))));
-                employees.saveToFile(); //this will cause duplicates to be saved if the file is loaded in memory
-            }
-        } else if (args[0] == "update") {
-            //should receive "update {id} {col} {updated}"
-            if (requiredArgumentsPresent(args.size() - 1, 3)) {
-                employees.loadFromFile();
-                auto comparator = [=](const Record& r1) -> bool {
-                    return r1.id == std::stoi(args[1]);
-                };
-                auto updater = [=](Record& r1) -> void {
-                    //ok, so this updates BUT it DUPLICATES rather than truly updating
-                    if (args[2][0] == 'f') {
-                        std::strncpy(r1.firstName, args[3].c_str(), sizeof(r1.firstName));
-                    } else {
-                        std::strncpy(r1.lastName, args[3].c_str(), sizeof(r1.lastName));
-                    }
-                };
-                employees.updateWhere(comparator, updater);
-                employees.saveToFile();
-            }
-        } else if (args[0] == "delete") {
-
-        } else if (args[0] == "exit") {
-            cont = false;
-        } else if (args[0] == "select") {
-            employees.loadFromFile();
-            if (args[1] == "*") {
-                auto rec = employees.getRecords();
-                for (auto& r: rec) {
-                    employees.printRecord(r);
-                }
-            }
-        } else if (args[0] == "help") {
-
+        auto it = commands.find(args[0]);
+        if (it != commands.end()) {
+            std::cout << it->second(args) << std::endl;
         } else {
-            std::cout << "Unknown command: " << command << std::endl;
+            std::cout << "error: unknown command" << std::endl;
         }
+
     } while (CLIActive);
 }
 
@@ -102,6 +64,9 @@ void CLI::setup() {
     registerCommand("select", [this](const std::vector<std::string>& args) {
         return selectHandler(args);
     });
+    registerCommand("exit", [this](const std::vector<std::string>& args) {
+        return exitHandler(args);
+    });
 }
 
 std::string CLI::useHandler(const std::vector<std::string>& args) {
@@ -114,7 +79,8 @@ std::string CLI::useHandler(const std::vector<std::string>& args) {
         currentTable = lastUsed;
         return "error: table not found";
     }
-    lastUsed->saveToFile();
+    if (lastUsed != nullptr)
+        lastUsed->saveToFile();
     currentTable->loadFromFile();
     return "active table: " + currentTable->getTableName();
 }
