@@ -9,6 +9,6 @@
 
 int main() {
     Database engine;
-    CLI terminal;
+    CLI terminal(engine);
     std::cout << "shutting down..." << std::endl;
 }
