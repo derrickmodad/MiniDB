@@ -7,8 +7,22 @@
 #include "table.hpp"
 #include <fstream>
 
+bool Database::checkTableFileExists() {
+    std::ifstream inFile("dbTableFile.txt");
+    if (!inFile.good()) {
+        std::ofstream outFile("dbTableFile.txt");
+        if (!outFile) {
+            return false;
+        }
+    }
+    return true;
+}
+
 Database::Database() {
     //make file for tables (if not created)
+    if (!checkTableFileExists()) {
+        throw std::runtime_error("Database file not found");
+    }
     tables.clear();
     std::ifstream inDBTableFile("dbTableFile.txt",std::ios::in);
     std::string tableName;

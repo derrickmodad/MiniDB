@@ -13,6 +13,7 @@
 class Database {
 private:
     std::unordered_map<std::string, Table> tables;
+    bool checkTableFileExists();
 
 public:
     Database();
