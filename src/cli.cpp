@@ -84,6 +84,12 @@ void CLI::runCLI() {
 }
 
 void CLI::setup() {
+    registerCommand("use", [this](const std::vector<std::string>& args) {
+        return useHandler(args);
+    });
+    registerCommand("create", [this](const std::vector<std::string>& args) {
+        return createHandler(args);
+    });
     registerCommand("insert", [this](const std::vector<std::string>& args) {
         return insertHandler(args);
     });
@@ -99,9 +105,8 @@ void CLI::setup() {
 }
 
 std::string CLI::useHandler(const std::vector<std::string>& args) {
-    //may need to save here before switching
     Table* lastUsed = currentTable; //this should save a pointer to the table before switching so it can be saved if switch is successful
-    if (!args.size() != 2) {
+    if (args.size() != 2) {
         return "syntax error - expected: use <table name>";
     }
     currentTable = db.lookupTable(args[1]);
@@ -111,11 +116,20 @@ std::string CLI::useHandler(const std::vector<std::string>& args) {
     }
     lastUsed->saveToFile();
     currentTable->loadFromFile();
-    return "success";
+    return "active table: " + currentTable->getTableName();
 }
 
 std::string CLI::createHandler(const std::vector<std::string>& args) {
-
+    //only for static table for current use - will expand on later with dynamic implementation
+    if (args.size() != 2) {
+        return "syntax error - expected: create <table name>";
+    }
+    Table* query = db.lookupTable(args[1]);
+    if (query != nullptr) {
+        return "error: table already exists";
+    }
+    db.appendTable(args[1]);
+    return "successfully created " + args[1];
 }
 
 std::string CLI::insertHandler(const std::vector<std::string>& args) {
