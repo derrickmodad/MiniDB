@@ -15,6 +15,7 @@ bool Database::checkTableFileExists() {
             return false;
         }
     }
+    //may need to close file here
     return true;
 }
 

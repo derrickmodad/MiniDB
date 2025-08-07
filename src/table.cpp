@@ -34,6 +34,10 @@ void Table::saveToFile() {
 void Table::loadFromFile() {
     records.clear();
     std::ifstream inFile(tableFile, std::ios::binary | std::ios::in);
+
+    //need something here to make file for new tables
+    //---- working here ----
+
     Record record;
     while (deserialize(inFile, record)) {
         records.push_back(record);

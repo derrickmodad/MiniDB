@@ -17,7 +17,7 @@ private:
     std::string tableFile;
     std::vector<Record> records;
 public:
-    Table(std::string name);
+    Table(std::string);
 
     //record insertion and viewing
     void insertRecord(Record record);
