@@ -45,4 +45,9 @@ bool Database::saveTableFile() {
     return true;
 }
 
+void Database::appendTable(std::string newTable) {
+    tables[newTable] = Table(newTable);
+}
+
+
 

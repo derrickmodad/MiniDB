@@ -19,6 +19,7 @@ public:
     ~Database();
     Table* lookupTable(std::string);
     bool saveTableFile();
+    void appendTable(std::string);
 };
 
 #endif //DATABASE_HPP
