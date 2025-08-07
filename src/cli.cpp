@@ -175,15 +175,3 @@ void CLI::registerCommand(const std::string & name, const std::function<std::str
         commands[name] = handler;
     }
 }
-
-//now lets tackle the table problem
-//need to create a table on the create command, but need to remember the tables beyond the map, so a file is necessary, probably with serialization
-//on use, need to switch active table, but need to check if it exists in the table map
-//so, this involves creating handlers that will either add to the map or check the map
-//if adding, need to save
-//also, on loading, so on setup() call, probably need to build the map from the table file discussed above
-//adding will mimic registerCommand to ensure duped tables don't exist
-
-//will use method to call in database engine to find table and set active in CLI
-
-//so useHandler calls lookupTable and will either receive reference to table or nullptr if not found
