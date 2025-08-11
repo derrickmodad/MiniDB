@@ -8,7 +8,7 @@
 
 Table::Table(std::string name) {
     tableName = name;
-    tableFile = name + ".db";
+    tableFile = "tables/" + name + ".db";
 }
 
 void Table::insertRecord(Record record) {
@@ -35,8 +35,11 @@ void Table::loadFromFile() {
     records.clear();
     std::ifstream inFile(tableFile, std::ios::binary | std::ios::in);
 
-    //need something here to make file for new tables
-    //---- working here ----
+    if (!inFile.good()) {
+        std::ofstream outFile(tableFile, std::ios::binary | std::ios::out);
+        outFile.close();
+        return; //return since file was created and nothing to load
+    }
 
     Record record;
     while (deserialize(inFile, record)) {

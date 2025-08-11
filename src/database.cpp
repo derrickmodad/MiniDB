@@ -6,6 +6,7 @@
 #include "record.hpp"
 #include "table.hpp"
 #include <fstream>
+#include <filesystem>
 
 bool Database::checkTableFileExists() {
     std::ifstream inFile("dbTableFile.txt");
@@ -14,15 +15,30 @@ bool Database::checkTableFileExists() {
         if (!outFile) {
             return false;
         }
+        outFile.close();
     }
-    //may need to close file here
+    inFile.close();
+    return true;
+}
+
+bool Database::checkTableDirectoryExists() {
+    std::filesystem::path dir = "tables";
+    if (!std::filesystem::exists(dir)) {
+        if (!std::filesystem::create_directory(dir)) {
+            return false;
+        }
+    }
     return true;
 }
 
 Database::Database() {
-    //make file for tables (if not created)
+    //make file for tables
     if (!checkTableFileExists()) {
-        throw std::runtime_error("Database file not found");
+        throw std::runtime_error("fatal error: Database file not found");
+    }
+    //make directory for tables
+    if (!checkTableDirectoryExists()) {
+        throw std::runtime_error("fatal error: Database directory not found");
     }
     tables.clear();
     std::ifstream inDBTableFile("dbTableFile.txt",std::ios::in);
