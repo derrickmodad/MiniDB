@@ -6,8 +6,7 @@
 #include <fstream>
 #include <iostream>
 
-Table::Table(std::string name) {
-    tableName = name;
+Table::Table(std::string& name, std::vector<Column>& columns) : tableName(name), columns(columns) {
     tableFile = "tables/" + name + ".db";
 }
 
@@ -19,14 +18,10 @@ std::vector<Record> Table::getRecords() {
     return records;
 }
 
-void Table::printRecord(Record& record) {
-    std::cout << record.id << ' ' << record.firstName << ' ' << record.lastName << std::endl;
-}
-
 void Table::saveToFile() {
     std::ofstream outFile(tableFile, std::ios::binary | std::ios::app);
     for (auto& record : records) {
-        serialize(outFile, record);
+        record.serialize(outFile);
     }
     outFile.close();
 }
@@ -42,7 +37,7 @@ void Table::loadFromFile() {
     }
 
     Record record;
-    while (deserialize(inFile, record)) {
+    while (record.deserialize(inFile)) {
         records.push_back(record);
     }
     inFile.close();

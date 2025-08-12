@@ -6,23 +6,28 @@
 #define TABLE_HPP
 
 #include <functional>
-
 #include "record.hpp"
 #include <vector>
 #include <string>
+
+struct Column {
+    std::string name;
+    std::string type;
+};
 
 class Table {
 private:
     std::string tableName;
     std::string tableFile;
+    std::vector<Column> columns;
     std::vector<Record> records;
+
 public:
-    Table(std::string);
+    Table(std::string&, std::vector<Column>&);
 
     //record insertion and viewing
     void insertRecord(Record record);
     std::vector<Record> getRecords();
-    void printRecord(Record& record);
 
     //save and load
     void saveToFile();
