@@ -4,35 +4,47 @@
 
 #include "record.hpp"
 #include <fstream>
+#include <iostream>
 
-Record createRecord(unsigned int id, char firstName[], char lastName[]) {
-    Record record;
-    record.id = id;
-    std::strncpy(record.firstName, firstName, sizeof(record.firstName) - 1);
-    record.firstName[sizeof(record.firstName) - 1] = '\0';
-    std::strncpy(record.lastName, lastName, sizeof(record.lastName) - 1);
-    record.lastName[sizeof(record.lastName) - 1] = '\0';
-    return record;
-}
 
-void serialize(std::ofstream &out, Record &record) {
+Record::Record(std::vector<std::string>& vals) : data(vals) {}
+
+bool Record::serialize(std::ofstream &out) const {
     if (!out) {
         std::cout << "Error opening file" << std::endl;
-        return;
+        return false;
     }
-    out.write(reinterpret_cast<const char *>(&record.id), sizeof(record.id));
-    out.write(record.firstName, sizeof(record.firstName));
-    out.write(record.lastName, sizeof(record.lastName));
+    size_t recSize = data.size();
+    out.write(reinterpret_cast<const char *>(&recSize), sizeof(recSize));
+
+    for (const auto& item : data) {
+        size_t len = item.size();
+        out.write(reinterpret_cast<const char*>(&len), sizeof(len));
+        out.write(item.c_str(), len);
+    }
+    return true;
 }
 
-bool deserialize(std::ifstream &in, Record &record) {
-    if (!in) {
-        std::cout << "Error opening file" << std::endl;
-    } else {
-        in.read(reinterpret_cast<char *>(&record.id), sizeof(record.id));
-        in.read(record.firstName, sizeof(record.firstName));
-        in.read(record.lastName, sizeof(record.lastName));
-    }
+bool Record::deserialize(std::ifstream &in) {
+    if (!in.good())
+        return false; // may opt to display error here
+    data.clear();
+    size_t recSize;
+    in.read(reinterpret_cast<char *>(&recSize), sizeof(recSize));
 
-    return in.good();
+    for (size_t i = 0; i < recSize; i++) {
+        size_t len;
+        in.read(reinterpret_cast<char *>(&len), sizeof(len));
+        std::string item(len, '\0');
+        in.read(&item[0], len);
+        data.push_back(std::move(item));
+    }
+    return true;
+}
+
+void Record::printRecord() const {
+    for (const auto& item : data) {
+        std::cout << item << " ";
+    }
+    std::cout << std::endl;
 }

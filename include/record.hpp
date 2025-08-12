@@ -5,18 +5,17 @@
 #ifndef RECORD_HPP
 #define RECORD_HPP
 
-#include <iostream>
+#include <string>
+#include <vector>
 
-struct Record {
-    unsigned int id;
-    char firstName[32];
-    char lastName[32];
+class Record {
+    std::vector<std::string> data;
+public:
+    Record() = default;
+    Record(std::vector<std::string>&);
+    bool serialize(std::ofstream& out) const;
+    bool deserialize(std::ifstream& in);
+    void printRecord() const;
 };
-
-Record createRecord(unsigned int id, char firstName[], char lastName[]);
-
-void serialize(std::ofstream& out, Record& record);
-
-bool deserialize(std::ifstream& in, Record &record);
 
 #endif //RECORD_HPP
