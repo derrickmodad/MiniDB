@@ -70,4 +70,12 @@ std::string Table::getTableName() {
     return tableName;
 }
 
+std::string Table::getColumnNames() {
+    std::string names;
+    for (auto& col : columns) {
+        names += "|" + col.name;
+    }
+    return names;
+}
+
 

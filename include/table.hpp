@@ -12,7 +12,7 @@
 
 struct Column {
     std::string name;
-    std::string type;
+    std::string type = "string"; //string type for all (temporarily)
 };
 
 class Table {
@@ -39,6 +39,7 @@ public:
     void updateWhere(std::function<bool(const Record&)> comparator, std::function<void(Record&)> updater);
 
     std::string getTableName();
+    std::string getColumnNames();
 };
 
 #endif //TABLE_HPP
