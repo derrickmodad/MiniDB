@@ -3,8 +3,6 @@
 #include <string>
 #include <sstream>
 #include "database.hpp"
-#include "table.hpp"
-#include "record.hpp"
 #include "cli.hpp"
 
 int main() {

@@ -3,6 +3,7 @@
 //
 
 #include "cli.hpp"
+#include <complex>
 
 using CommandHandler = std::function<std::string(const std::vector<std::string>&)>;
 
@@ -86,15 +87,28 @@ std::string CLI::useHandler(const std::vector<std::string>& args) {
 }
 
 std::string CLI::createHandler(const std::vector<std::string>& args) {
-    //only for static table for current use - will expand on later with dynamic implementation
-    if (args.size() != 2) {
-        return "syntax error - expected: create <table name>";
+    //check that at least one column is passed along with name
+    if (args.size() <= 2) {
+        return "syntax error - expected: create <table name> <column name> (at least 1 column name must be present)";
     }
+
+    //check if table exists
     Table* query = db.lookupTable(args[1]);
     if (query != nullptr) {
         return "error: table already exists";
     }
-    db.appendTable(args[1]);
+
+    //build args into string for table
+    std::string tableInfo = "";
+    for (int i = 1; i < args.size(); i++) {
+        tableInfo += args[i];
+        if (i != args.size() - 1) {
+            tableInfo += "|";
+        }
+    }
+
+    //add table to table map
+    db.appendTable(tableInfo);
     return "successfully created " + args[1];
 }
 
@@ -125,9 +139,7 @@ std::string CLI::helpHandler(const std::vector<std::string>& args) {
     return "Invalid syntax: help <command> (not yet built)";
 }
 
-CLI::CLI(Database& db) : db(db) {
-    //constructor
-    //build command table
+CLI::CLI(Database& database) : db(database) {
     currentTable = nullptr;
     setup();
     CLIActive = true;

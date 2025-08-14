@@ -5,8 +5,8 @@
 #ifndef TABLE_HPP
 #define TABLE_HPP
 
-#include <functional>
 #include "record.hpp"
+#include <functional>
 #include <vector>
 #include <string>
 

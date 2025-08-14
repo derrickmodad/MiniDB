@@ -3,8 +3,6 @@
 //
 
 #include "database.hpp"
-#include "record.hpp"
-#include "table.hpp"
 #include <iostream>
 #include <fstream>
 #include <filesystem>

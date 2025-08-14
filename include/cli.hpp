@@ -5,12 +5,10 @@
 #ifndef CLI_HPP
 #define CLI_HPP
 
-#include "table.hpp"
 #include "database.hpp"
-#include <iostream>
+#include "table.hpp"
 #include <vector>
 #include <string>
-#include <sstream>
 #include <unordered_map>
 
 class CLI {
