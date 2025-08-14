@@ -3,6 +3,7 @@
 //
 
 #include "database.hpp"
+#include "cli.hpp"
 #include <iostream>
 #include <fstream>
 #include <filesystem>

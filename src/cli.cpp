@@ -4,6 +4,7 @@
 
 #include "cli.hpp"
 #include <complex>
+#include <iostream>
 
 using CommandHandler = std::function<std::string(const std::vector<std::string>&)>;
 
@@ -91,13 +92,11 @@ std::string CLI::createHandler(const std::vector<std::string>& args) {
     if (args.size() <= 2) {
         return "syntax error - expected: create <table name> <column name> (at least 1 column name must be present)";
     }
-
     //check if table exists
     Table* query = db.lookupTable(args[1]);
     if (query != nullptr) {
         return "error: table already exists";
     }
-
     //build args into string for table
     std::string tableInfo = "";
     for (int i = 1; i < args.size(); i++) {
@@ -106,7 +105,6 @@ std::string CLI::createHandler(const std::vector<std::string>& args) {
             tableInfo += "|";
         }
     }
-
     //add table to table map
     db.appendTable(tableInfo);
     return "successfully created " + args[1];
