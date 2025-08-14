@@ -5,6 +5,7 @@
 #include "database.hpp"
 #include "record.hpp"
 #include "table.hpp"
+#include <iostream>
 #include <fstream>
 #include <filesystem>
 
@@ -42,9 +43,9 @@ Database::Database() {
     }
     tables.clear();
     std::ifstream inDBTableFile("dbTableFile.txt",std::ios::in);
-    std::string tableName;
-    while (getline(inDBTableFile, tableName)) {
-        appendTable(tableName);
+    std::string tableInfo;
+    while (getline(inDBTableFile, tableInfo)) {
+        appendTable(tableInfo);
         //opting for manual load rn, but could do this: tables[tableName].loadFromFile();
     }
     inDBTableFile.close();
@@ -57,7 +58,7 @@ Database::~Database() {
 }
 
 //checks for table in map, returns if found, else returns nullptr
-Table *Database::lookupTable(std::string query) {
+Table *Database::lookupTable(const std::string& query) {
     auto it =  tables.find(query);
     if (it != tables.end()) {
         return &(it->second);
@@ -71,14 +72,19 @@ bool Database::saveTableFile() {
     if (!outDBTableFile.good())
         return false;
     for (auto it = tables.begin(); it != tables.end(); ++it) {
-        outDBTableFile << it->first << std::endl;
+        outDBTableFile << it->first << it->second.getColumnNames() << std::endl;
     }
     outDBTableFile.close();
     return true;
 }
 
-void Database::appendTable(std::string newTable) {
-    tables.emplace(newTable, Table(newTable));
+void Database::appendTable(std::string& tableInfo) {
+    std::vector<std::string> splitTabInfo = CLI::split(tableInfo, '|');
+    std::vector<Column> columns;
+    for (int i = 1; i < splitTabInfo.size(); i++) {
+        columns.emplace_back(Column{splitTabInfo[i]});
+    }
+    tables.emplace(splitTabInfo[0], Table(splitTabInfo[0], columns));
 }
 
 

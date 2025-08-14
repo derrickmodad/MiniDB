@@ -7,6 +7,7 @@
 
 #include "record.hpp"
 #include "table.hpp"
+#include "cli.hpp"
 #include <unordered_map>
 #include <string>
 
@@ -19,9 +20,9 @@ private:
 public:
     Database();
     ~Database();
-    Table* lookupTable(std::string);
+    Table* lookupTable(const std::string&);
     bool saveTableFile();
-    void appendTable(std::string);
+    void appendTable(std::string&);
 };
 
 #endif //DATABASE_HPP
