@@ -30,7 +30,10 @@ bool Record::deserialize(std::ifstream &in) {
         return false; // may opt to display error here
     data.clear();
     size_t recSize;
+
     in.read(reinterpret_cast<char *>(&recSize), sizeof(recSize));
+    if (!in)
+        return false;
 
     for (size_t i = 0; i < recSize; i++) {
         size_t len;
