@@ -78,4 +78,8 @@ std::string Table::getColumnNames() {
     return names;
 }
 
+int Table::getColumnCount() {
+    return columns.size();
+}
+
 

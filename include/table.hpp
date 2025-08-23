@@ -40,6 +40,7 @@ public:
 
     std::string getTableName();
     std::string getColumnNames();
+    int getColumnCount();
 };
 
 #endif //TABLE_HPP
