@@ -19,7 +19,7 @@ std::vector<Record> Table::getRecords() {
 }
 
 void Table::saveToFile() {
-    std::ofstream outFile(tableFile, std::ios::binary | std::ios::app);
+    std::ofstream outFile(tableFile, std::ios::binary); //| std::ios::app);
     for (auto& record : records) {
         record.serialize(outFile);
     }
@@ -29,7 +29,6 @@ void Table::saveToFile() {
 void Table::loadFromFile() {
     records.clear();
     std::ifstream inFile(tableFile, std::ios::binary | std::ios::in);
-
     if (!inFile.good()) {
         std::ofstream outFile(tableFile, std::ios::binary | std::ios::out);
         outFile.close();
