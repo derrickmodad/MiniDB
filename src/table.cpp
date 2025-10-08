@@ -77,6 +77,15 @@ std::string Table::getColumnNames() {
     return names;
 }
 
+bool Table::columnExists(std::string columnName) {
+    for (Column& col : columns) {
+        if (col.name == columnName) {
+            return true;
+        }
+    }
+    return false;
+}
+
 int Table::getColumnCount() {
     return columns.size();
 }
