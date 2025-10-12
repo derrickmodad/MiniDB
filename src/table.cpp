@@ -77,6 +77,10 @@ std::string Table::getColumnNames() {
     return names;
 }
 
+std::vector<Column> Table::getColumns() {
+    return columns;
+}
+
 bool Table::columnExists(std::string columnName) {
     for (Column& col : columns) {
         if (col.name == columnName) {

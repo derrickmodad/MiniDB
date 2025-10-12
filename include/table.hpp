@@ -40,6 +40,7 @@ public:
 
     std::string getTableName();
     std::string getColumnNames();
+    std::vector<Column> getColumns();
     bool columnExists(std::string columnName);
     int getColumnCount();
 };
