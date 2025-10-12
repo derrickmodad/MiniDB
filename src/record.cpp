@@ -51,3 +51,7 @@ void Record::printRecord() const {
     }
     std::cout << std::endl;
 }
+
+std::vector<std::string> Record::getData() const {
+    return data;
+}

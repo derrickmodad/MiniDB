@@ -16,6 +16,7 @@ public:
     bool serialize(std::ofstream& out) const;
     bool deserialize(std::ifstream& in);
     void printRecord() const;
+    std::vector<std::string> getData() const;
 };
 
 #endif //RECORD_HPP
