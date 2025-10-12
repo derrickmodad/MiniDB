@@ -32,6 +32,8 @@ private:
     std::string selectHandler(const std::vector<std::string>&);
     std::string exitHandler(const std::vector<std::string>&);
     std::string helpHandler(const std::vector<std::string>&);
+
+    bool activeCurrentTable();
 public:
     static std::vector<std::string> split (const std::string &, char);
     CLI(Database&);

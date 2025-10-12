@@ -3,7 +3,7 @@
 //
 
 #include "cli.hpp"
-#include <complex>
+#include <sstream>
 #include <iostream>
 
 using CommandHandler = std::function<std::string(const std::vector<std::string>&)>;
@@ -111,7 +111,17 @@ std::string CLI::createHandler(const std::vector<std::string>& args) {
 }
 
 std::string CLI::insertHandler(const std::vector<std::string>& args) {
-    return "not yet built";
+    if (!activeCurrentTable())
+        return "error: no table selected";
+
+    //get count of columns in currentTable and check for args to match
+    if (args.size() - 1 != currentTable->getColumnCount()) {
+        return "error: supplied arguments do not match number of columns in table";
+    }
+    std::vector<std::string> trimmedArgs(args.begin() + 1, args.end());
+    Record newRecord(trimmedArgs);
+    currentTable->insertRecord(newRecord);
+    return "successfully inserted";
 }
 
 std::string CLI::updateHandler(const std::vector<std::string>& args) {
@@ -123,10 +133,73 @@ std::string CLI::deleteHandler(const std::vector<std::string>& args) {
 }
 
 std::string CLI::selectHandler(const std::vector<std::string>& args) {
-    return "not yet built";
+    if (!activeCurrentTable())
+        return "error: no table selected";
+
+    if (args.size() - 1 < 1)
+        return "error: at least one argument must be supplied";
+
+    //select *
+    if (args[1] == "*") {
+        for (auto const &record : currentTable->getRecords()) {
+            record.printRecord();
+        }
+        return "-- all records printed";
+    }
+
+    //select column=value
+    //tokenize search conditions and check for syntax errors
+    //vectors to hold multiple arguments
+    std::vector<std::string> column;
+    std::vector<std::string> value;
+    for (int i = 1; i < args.size(); i++) {
+        std::vector<std::string> parts = split(args[i], '=');
+        if (parts[1].empty())
+            return ("error: no value specified for " + parts[0]);
+
+        if (!currentTable->columnExists(parts[0]))
+            return ("error: column " + parts[0] + " not found");
+
+        if (parts[1][0] != '"' || parts[1][parts[1].size() - 1] != '"')
+            return ("error: value " + parts[1] + " is not a valid string value");
+
+        column.push_back(parts[0]);
+        value.push_back(parts[1].substr(1, parts[1].size() - 2)); //leave out quotation marks
+    }
+
+    auto comparator = [&](const Record& record) {
+        std::vector<std::string> store = record.getData();
+        const std::vector<Column>& cols = currentTable->getColumns();
+
+        for (int i = 0; i < column.size(); i++) {
+            const std::string& colName = column[i];
+            const std::string& val = value[i];
+            int colIndex = -1;
+            for (int j = 0; j < cols.size(); j++) {
+                if (cols[j].name == colName) {
+                    colIndex = j;
+                    break;
+                }
+            }
+
+            if (colIndex == -1 || store[colIndex] != val)
+                return false;
+        }
+        return true;
+    };
+
+    std::vector<Record> results = currentTable->selectWhere(comparator);
+
+    //print results (may be updated to support shipping results)
+    for (Record const &r : results) {
+        r.printRecord();
+    }
+
+    return "success";
 }
 
 std::string CLI::exitHandler(const std::vector<std::string>& args) {
+    currentTable->saveToFile(); //save contents of current table OR could have a commit function
     CLIActive = false;
     //use args to determine if to save changes
     return "success";
@@ -135,6 +208,10 @@ std::string CLI::exitHandler(const std::vector<std::string>& args) {
 std::string CLI::helpHandler(const std::vector<std::string>& args) {
     //use args to determine what to help with, else print list with proper format
     return "Invalid syntax: help <command> (not yet built)";
+}
+
+bool CLI::activeCurrentTable() {
+    return currentTable != nullptr;
 }
 
 CLI::CLI(Database& database) : db(database) {
