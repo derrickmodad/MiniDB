@@ -150,13 +150,12 @@ std::string CLI::deleteHandler(const std::vector<std::string>& args) {
         std::cout << "warning: delete all records of the current table? (delete all/cancel)\n> ";
         std::string confirm;
         std::getline(std::cin, confirm);
-        for (char& c : confirm)
-            c = std::tolower(static_cast<unsigned char>(c));
+        toLowerCase(confirm);
         if (confirm != "delete all")
             return "delete: delete not confirmed";
 
         //delete all records
-        for (auto const &record : currentTable->getRecords()) {}
+        currentTable->deleteWhere([&](const Record&){return true;});
         return "-- all records deleted";
     }
 
