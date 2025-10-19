@@ -4,6 +4,7 @@
 
 #include "cli.hpp"
 #include <sstream>
+#include <cctype>
 #include <iostream>
 
 using CommandHandler = std::function<std::string(const std::vector<std::string>&)>;
@@ -124,12 +125,74 @@ std::string CLI::insertHandler(const std::vector<std::string>& args) {
     return "successfully inserted";
 }
 
+//update column="value"
 std::string CLI::updateHandler(const std::vector<std::string>& args) {
+    if (!activeCurrentTable())
+        return "error: no table selected";
+
+    if (args.size() - 1 < 1)
+        return "error: at least one argument must be supplied";
+
+    //syntax planning
+
     return "not yet built";
 }
 
+//delete column="value"
 std::string CLI::deleteHandler(const std::vector<std::string>& args) {
-    return "not yet built";
+    if (!activeCurrentTable())
+        return "error: no table selected";
+
+    if (args.size() - 1 < 1)
+        return "error: at least one argument must be supplied (to delete all, use: delete *)";
+
+    if (args[1] == "*") {
+        std::cout << "warning: delete all records of the current table? (delete all/cancel)\n> ";
+        std::string confirm;
+        std::getline(std::cin, confirm);
+        for (char& c : confirm)
+            c = std::tolower(static_cast<unsigned char>(c));
+        if (confirm != "delete all")
+            return "delete: delete not confirmed";
+
+        //delete all records
+        for (auto const &record : currentTable->getRecords()) {}
+        return "-- all records deleted";
+    }
+
+    //find certain record(s) to be deleted
+    std::vector<std::string> column, value;
+    if (!parseColVal(column, value, args))
+        return "";
+
+    //remember to look at the deleteWhere function
+    //  looks like it will erase from vector directly
+    //so need to build a comparator (may be able to use the select's comparator, or at least part of it)
+
+    auto comparator = [&](const Record& record) {
+        std::vector<std::string> store = record.getData();              //get the data
+        const std::vector<Column>& cols = currentTable->getColumns();   //get the columns
+
+        for (int i = 0; i < column.size(); i++) {                       //for each column in arguments
+            const std::string& colName = column[i];                     //save name of argument column
+            const std::string& val = value[i];                          //save search value
+            int colIndex = -1;                                          //set found index to -1
+            for (int j = 0; j < cols.size(); j++) {                     //loop through columns of table
+                if (cols[j].name == colName) {                          //if the name matches, save index and exit loop
+                    colIndex = j;
+                    break;
+                }
+            }
+
+            if (colIndex == -1 || store[colIndex] != val)               //if not found OR value is not right, return false
+                return false;
+        }
+        return true;                                                    //value is right at correct index, return true
+    };
+
+    currentTable->deleteWhere(comparator);
+
+    return "success";
 }
 
 std::string CLI::selectHandler(const std::vector<std::string>& args) {
@@ -150,22 +213,10 @@ std::string CLI::selectHandler(const std::vector<std::string>& args) {
     //select column=value
     //tokenize search conditions and check for syntax errors
     //vectors to hold multiple arguments
-    std::vector<std::string> column;
-    std::vector<std::string> value;
-    for (int i = 1; i < args.size(); i++) {
-        std::vector<std::string> parts = split(args[i], '=');
-        if (parts[1].empty())
-            return ("error: no value specified for " + parts[0]);
+    std::vector<std::string> column, value;
 
-        if (!currentTable->columnExists(parts[0]))
-            return ("error: column " + parts[0] + " not found");
-
-        if (parts[1][0] != '"' || parts[1][parts[1].size() - 1] != '"')
-            return ("error: value " + parts[1] + " is not a valid string value");
-
-        column.push_back(parts[0]);
-        value.push_back(parts[1].substr(1, parts[1].size() - 2)); //leave out quotation marks
-    }
+    if (!parseColVal(column, value, args))
+        return "";
 
     auto comparator = [&](const Record& record) {
         std::vector<std::string> store = record.getData();
@@ -208,6 +259,30 @@ std::string CLI::exitHandler(const std::vector<std::string>& args) {
 std::string CLI::helpHandler(const std::vector<std::string>& args) {
     //use args to determine what to help with, else print list with proper format
     return "Invalid syntax: help <command> (not yet built)";
+}
+
+bool CLI::parseColVal(std::vector<std::string>& column, std::vector<std::string>& value, const std::vector<std::string>& args) const {
+    for (int i = 1; i < args.size(); i++) {
+        std::vector<std::string> parts = split(args[i], '=');
+        if (parts[1].empty()) {
+            std::cout << "error: no value specified for " + parts[0];
+            return false;
+        }
+
+        if (!currentTable->columnExists(parts[0])) {
+            std::cout << "error: column " + parts[0] + " not found";
+            return false;
+        }
+
+        if (parts[1][0] != '"' || parts[1][parts[1].size() - 1] != '"') {
+            std::cout << "error: value " + parts[1] + " is not a valid string value";
+            return false;
+        }
+
+        column.push_back(parts[0]);
+        value.push_back(parts[1].substr(1, parts[1].size() - 2)); //leave out quotation marks
+    }
+    return true;
 }
 
 bool CLI::activeCurrentTable() {
