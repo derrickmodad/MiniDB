@@ -36,6 +36,7 @@ private:
     bool activeCurrentTable();
 public:
     static std::vector<std::string> split (const std::string &, char);
+    static void toLowerCase(std::string &);
     CLI(Database&);
     void registerCommand(const std::string&, const std::function<std::string(const std::vector<std::string>&)>&); //individual registering of commands, left public for extensibility
 };

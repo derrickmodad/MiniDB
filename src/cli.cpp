@@ -285,6 +285,12 @@ bool CLI::parseColVal(std::vector<std::string>& column, std::vector<std::string>
     return true;
 }
 
+void CLI::toLowerCase(std::string& str) {
+    for (char& c : str)
+        c = std::tolower(static_cast<unsigned char>(c));
+}
+
+
 bool CLI::activeCurrentTable() {
     return currentTable != nullptr;
 }
