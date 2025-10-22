@@ -127,7 +127,7 @@ std::string CLI::insertHandler(const std::vector<std::string>& args) {
     return "successfully inserted";
 }
 
-//update column="value"
+//update column="value" with column="value" column="value"
 std::string CLI::updateHandler(const std::vector<std::string>& args) {
     if (!activeCurrentTable())
         return "error: no table selected";
@@ -135,9 +135,82 @@ std::string CLI::updateHandler(const std::vector<std::string>& args) {
     if (args.size() - 1 < 1)
         return "error: at least one argument must be supplied";
 
-    //syntax planning
+    //find with (this is necessary for update statements)
+    int preWithArgsCount = -1;                                                           //args to be passed to comparator
+    bool withPresent = false;
+    for (std::string arg : args) {
+        toLowerCase(arg);
+        if (arg != "with")
+            preWithArgsCount++;
+        else if (arg == "with") {
+            withPresent = true;
+            if (preWithArgsCount < 1)
+                return "error: identifier columns must be supplied before \"with\"";
+            break;
+        }
+    }
 
-    return "not yet built";
+    if (!withPresent)
+        return R"(syntax error - missing "with" - expected: update <column>="<value>" with <column>="<value>")";
+
+    if (preWithArgsCount == args.size() - 2)
+        return R"(error: updater columns must be supplied after "with")";
+
+    std::vector<std::string> preColumn, postColumn, preValue, postValue;
+    const std::vector<std::string> preWith(args.begin(), args.begin() + preWithArgsCount + 1),
+                                   postWith(args.begin() + preWithArgsCount + 1, args.end());
+    if (!parseColVal(preColumn, preValue, preWith))
+        return "";
+    if (!parseColVal(postColumn, postValue, postWith))
+        return "";
+
+    auto comparator = [&](const Record& record) {
+        const std::vector<std::string> store = record.getData();
+        const std::vector<Column>& cols = currentTable->getColumns();
+
+        for (int i = 0; i < preColumn.size(); i++) {
+            const std::string& colName = preColumn[i];
+            const std::string& val = preValue[i];
+            int colIndex = -1;
+            for (int j = 0; j < cols.size(); j++) {
+                if (cols[j].name == colName) {
+                    colIndex = j;
+                    break;
+                }
+            }
+
+            if (colIndex == -1 || store[colIndex] != val)
+                return false;
+        }
+        return true;
+    };
+
+    auto updater = [&](Record& record) {
+        const std::vector<Column>& cols = currentTable->getColumns();
+        std::vector<int> colIndices;
+        for (const std::string& colName : postColumn) {
+            int colIndex = -1;
+            for (int j = 0; j < cols.size(); j++) {
+                if (cols[j].name == colName) {
+                    colIndex = j;
+                    colIndices.push_back(colIndex);
+                    break;
+                }
+            }
+            if (colIndex == -1) {
+                std::cout << "error: column not found";
+                return; //returning early to prevent adding column
+            }
+        }
+
+        for (int i = 0; i < colIndices.size(); i++) {
+            if (!record.alterData(colIndices[i], postValue[i]))
+                std::cout << "error: failed to alter record" << std::endl;
+        }
+    };
+
+    currentTable->updateWhere(comparator, updater);
+    return "success";
 }
 
 //delete column="value"
