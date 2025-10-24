@@ -100,8 +100,12 @@ std::string CLI::createHandler(const std::vector<std::string>& args) {
         return "error: table already exists";
     }
     //build args into string for table
-    std::string tableInfo = "";
+    std::string tableInfo;
     for (int i = 1; i < args.size(); i++) {
+        if (contains(args[i], '=')) {
+            std::cout << "error: " << args[i] << " contains '=' (illegal character)";
+            return "";
+        }
         tableInfo += args[i];
         if (i != args.size() - 1) {
             tableInfo += "|";
@@ -117,10 +121,16 @@ std::string CLI::insertHandler(const std::vector<std::string>& args) {
         return "error: no table selected";
 
     //get count of columns in currentTable and check for args to match
-    if (args.size() - 1 != currentTable->getColumnCount()) {
+    if (args.size() - 1 != currentTable->getColumnCount())
         return "error: supplied arguments do not match number of columns in table";
-    }
+
     std::vector<std::string> trimmedArgs(args.begin() + 1, args.end());
+    for (const std::string& arg : trimmedArgs) {
+        if (contains(arg, '=')) {
+            std::cout << "error: " << arg << " contains '=' (illegal character)";
+            return "";
+        }
+    }
     Record newRecord(trimmedArgs);
     currentTable->insertRecord(newRecord);
     return "successfully inserted";
@@ -238,12 +248,8 @@ std::string CLI::deleteHandler(const std::vector<std::string>& args) {
     if (!parseColVal(column, value, args))
         return "";
 
-    //remember to look at the deleteWhere function
-    //  looks like it will erase from vector directly
-    //so need to build a comparator (may be able to use the select's comparator, or at least part of it)
-
     auto comparator = [&](const Record& record) {
-        std::vector<std::string> store = record.getData();              //get the data
+        const std::vector<std::string> store = record.getData();        //get the data
         const std::vector<Column>& cols = currentTable->getColumns();   //get the columns
 
         for (int i = 0; i < column.size(); i++) {                       //for each column in arguments
@@ -264,7 +270,6 @@ std::string CLI::deleteHandler(const std::vector<std::string>& args) {
     };
 
     currentTable->deleteWhere(comparator);
-
     return "success";
 }
 
@@ -292,7 +297,7 @@ std::string CLI::selectHandler(const std::vector<std::string>& args) {
         return "";
 
     auto comparator = [&](const Record& record) {
-        std::vector<std::string> store = record.getData();
+        const std::vector<std::string> store = record.getData();
         const std::vector<Column>& cols = currentTable->getColumns();
 
         for (int i = 0; i < column.size(); i++) {
@@ -337,6 +342,11 @@ std::string CLI::helpHandler(const std::vector<std::string>& args) {
 bool CLI::parseColVal(std::vector<std::string>& column, std::vector<std::string>& value, const std::vector<std::string>& args) const {
     for (int i = 1; i < args.size(); i++) {
         std::vector<std::string> parts = split(args[i], '=');
+        if (parts.size() > 2 || parts.empty()) {
+            std::cout << R"(error: illegal character '=' found)";
+            return false;
+        }
+
         if (parts[1].empty()) {
             std::cout << "error: no value specified for " + parts[0];
             return false;
