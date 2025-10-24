@@ -359,6 +359,14 @@ bool CLI::parseColVal(std::vector<std::string>& column, std::vector<std::string>
     return true;
 }
 
+bool CLI::contains(const std::string& str, const char& character) {
+    for (const char c : str) {
+        if (c == character)
+            return true;
+    }
+    return false;
+}
+
 void CLI::toLowerCase(std::string& str) {
     for (char& c : str)
         c = std::tolower(static_cast<unsigned char>(c));
