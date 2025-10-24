@@ -9,7 +9,7 @@
 
 using CommandHandler = std::function<std::string(const std::vector<std::string>&)>;
 
-std::vector<std::string> CLI::split(const std::string& str, char delimiter) {
+std::vector<std::string> CLI::split(const std::string& str, const char& delimiter) {
     std::vector<std::string> tokens;
     std::istringstream stream(str);
     std::string token;
