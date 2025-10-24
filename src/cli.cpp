@@ -34,9 +34,8 @@ bool CLI::requiredArgumentsPresent(int args, int expected) {
 void CLI::runCLI() {
     std::string command;
     std::vector<std::string> args;
-    std::string currentTableName;
     do {
-        currentTableName = (activeCurrentTable() ? currentTable->getTableName() : "");
+        std::string currentTableName = (activeCurrentTable() ? currentTable->getTableName() : "");
         std::cout << currentTableName << "> " << std::flush;
         std::getline(std::cin, command);
         args = split(command, ' ');
