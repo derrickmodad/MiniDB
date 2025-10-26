@@ -279,7 +279,8 @@ std::string CLI::deleteHandler(const std::vector<std::string>& args) {
         return true;                                                    //value is right at correct index, return true
     };
 
-    currentTable->deleteWhere(comparator);
+    int deletedCount = currentTable->deleteWhere(comparator);
+    std::cout << "Deleted " << deletedCount << " record" << (deletedCount == 1 ? "" : "s") << std::endl;
     return "success";
 }
 

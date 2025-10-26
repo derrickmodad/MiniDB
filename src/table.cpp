@@ -52,8 +52,10 @@ std::vector<Record> Table::selectWhere(std::function<bool(const Record &)> compa
     return results;
 }
 
-void Table::deleteWhere(std::function<bool(const Record &)> comparator) {
+int Table::deleteWhere(std::function<bool(const Record &)> comparator) {
+    const int recordCount = records.size();
     records.erase(std::remove_if(records.begin(), records.end(), comparator), records.end());
+    return recordCount - records.size();
     //opting here for manual call to saveToFile to prevent unwanted changes
 }
 
