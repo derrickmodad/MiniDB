@@ -338,7 +338,8 @@ std::string CLI::selectHandler(const std::vector<std::string>& args) {
 }
 
 std::string CLI::exitHandler(const std::vector<std::string>& args) {
-    currentTable->saveToFile(); //save contents of current table OR could have a commit function
+    if (currentTable != nullptr)
+        currentTable->saveToFile(); //save contents of current table OR could have a commit function
     CLIActive = false;
     //use args to determine if to save changes
     return "success";
