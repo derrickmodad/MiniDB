@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cctype>
 #include <iostream>
+#include <unordered_set>
 
 using CommandHandler = std::function<std::string(const std::vector<std::string>&)>;
 
@@ -101,11 +102,20 @@ std::string CLI::createHandler(const std::vector<std::string>& args) {
     }
     //build args into string for table
     std::string tableInfo;
+    std::unordered_set<std::string> columns;
     for (int i = 1; i < args.size(); i++) {
+        //check for illegal characters
         if (contains(args[i], '=')) {
             std::cout << "error: " << args[i] << " contains '=' (illegal character)";
             return "";
         }
+
+        //check for duplicate column names
+        if (columns.contains(args[i])) {
+            std::cout << "error: cannot have duplicate column names (" << args[i] << ")";
+            return "";
+        }
+        columns.insert(args[i]);
         tableInfo += args[i];
         if (i != args.size() - 1) {
             tableInfo += "|";
