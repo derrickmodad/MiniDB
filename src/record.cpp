@@ -51,3 +51,17 @@ void Record::printRecord() const {
     }
     std::cout << std::endl;
 }
+
+std::vector<std::string> Record::getData() const {
+    return data;
+}
+
+bool Record::alterData(int col, const std::string& val) {
+    if (col >= data.size() || col < 0) {
+        std::cout << "error: column out of range" << std::endl;
+        return false;
+    }
+
+    data[col] = val;
+    return true;
+}

@@ -58,7 +58,7 @@ Database::~Database() {
 
 //checks for table in map, returns if found, else returns nullptr
 Table *Database::lookupTable(const std::string& query) {
-    auto it =  tables.find(query);
+    auto it = tables.find(query);
     if (it != tables.end()) {
         return &(it->second);
     }

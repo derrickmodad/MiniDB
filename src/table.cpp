@@ -19,7 +19,7 @@ std::vector<Record> Table::getRecords() {
 }
 
 void Table::saveToFile() {
-    std::ofstream outFile(tableFile, std::ios::binary | std::ios::app);
+    std::ofstream outFile(tableFile, std::ios::binary); //| std::ios::app);
     for (auto& record : records) {
         record.serialize(outFile);
     }
@@ -29,7 +29,6 @@ void Table::saveToFile() {
 void Table::loadFromFile() {
     records.clear();
     std::ifstream inFile(tableFile, std::ios::binary | std::ios::in);
-
     if (!inFile.good()) {
         std::ofstream outFile(tableFile, std::ios::binary | std::ios::out);
         outFile.close();
@@ -53,8 +52,10 @@ std::vector<Record> Table::selectWhere(std::function<bool(const Record &)> compa
     return results;
 }
 
-void Table::deleteWhere(std::function<bool(const Record &)> comparator) {
+int Table::deleteWhere(std::function<bool(const Record &)> comparator) {
+    const int recordCount = records.size();
     records.erase(std::remove_if(records.begin(), records.end(), comparator), records.end());
+    return recordCount - records.size();
     //opting here for manual call to saveToFile to prevent unwanted changes
 }
 
@@ -76,6 +77,19 @@ std::string Table::getColumnNames() {
         names += "|" + col.name;
     }
     return names;
+}
+
+std::vector<Column> Table::getColumns() {
+    return columns;
+}
+
+bool Table::columnExists(std::string columnName) {
+    for (Column& col : columns) {
+        if (col.name == columnName) {
+            return true;
+        }
+    }
+    return false;
 }
 
 int Table::getColumnCount() {

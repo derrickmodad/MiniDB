@@ -35,11 +35,13 @@ public:
 
     //select, delete, update
     std::vector<Record> selectWhere(std::function<bool(const Record&)> comparator) const;
-    void deleteWhere(std::function<bool(const Record&)> comparator);
+    int deleteWhere(std::function<bool(const Record&)> comparator);
     void updateWhere(std::function<bool(const Record&)> comparator, std::function<void(Record&)> updater);
 
     std::string getTableName();
     std::string getColumnNames();
+    std::vector<Column> getColumns();
+    bool columnExists(std::string columnName);
     int getColumnCount();
 };
 
