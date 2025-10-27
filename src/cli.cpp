@@ -8,8 +8,6 @@
 #include <iostream>
 #include <unordered_set>
 
-using CommandHandler = std::function<std::string(const std::vector<std::string>&)>;
-
 std::vector<std::string> CLI::split(const std::string& str, const char& delimiter) {
     std::vector<std::string> tokens;
     std::istringstream stream(str);
@@ -126,6 +124,13 @@ std::string CLI::createHandler(const std::vector<std::string>& args) {
     return "successfully created " + args[1];
 }
 
+//TODO: add an easy mode for inserting
+//  it will show the columns of the table like:
+//  insert -e (<- enter) (-e is flag for easy mode)
+//  displays each column like:
+//  id:
+//  name:
+//  email:
 std::string CLI::insertHandler(const std::vector<std::string>& args) {
     if (!activeCurrentTable())
         return "error: no table selected";
