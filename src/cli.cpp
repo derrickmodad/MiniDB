@@ -368,6 +368,8 @@ std::string CLI::showHandler(const std::vector<std::string>& args) {
             if (verbose) {
                 std::cout << " : ";
                 Table* tmpTablePtr = db.lookupTable(table);
+                if (tmpTablePtr == nullptr)
+                    continue;
                 const std::string cols = tmpTablePtr->getColumnNames();
                 for (const std::string& col : split(cols, '|'))
                     std::cout << col << ' ';
