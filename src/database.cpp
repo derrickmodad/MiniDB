@@ -65,6 +65,13 @@ Table *Database::lookupTable(const std::string& query) {
     return nullptr;
 }
 
+std::vector<std::string> Database::getTableNames() const {
+    std::vector<std::string> names;
+    for (auto & table : tables)
+        names.push_back(table.first);
+    return names;
+}
+
 //returns true on successful save, false otherwise
 bool Database::saveTableFile() {
     std::ofstream outDBTableFile("dbTableFile.txt", std::ios::out);

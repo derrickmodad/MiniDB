@@ -19,6 +19,7 @@ public:
     Database();
     ~Database();
     Table* lookupTable(const std::string&);
+    std::vector<std::string> getTableNames() const;
     bool saveTableFile();
     void appendTable(std::string&);
 };

@@ -24,14 +24,22 @@ private:
     void setup(); //default grouping of command registering, called from constructor
 
     //handlers
+
+    //table management
     std::string useHandler(const std::vector<std::string> &);
     std::string createHandler(const std::vector<std::string> &);
+
+    //record management
     std::string insertHandler(const std::vector<std::string>&);
     std::string updateHandler(const std::vector<std::string>&);
     std::string deleteHandler(const std::vector<std::string>&);
     std::string selectHandler(const std::vector<std::string>&);
+
+    //system management
     std::string exitHandler(const std::vector<std::string>&);
+    std::string showHandler(const std::vector<std::string>&);
     std::string helpHandler(const std::vector<std::string>&);
+
     bool parseColVal(std::vector<std::string>&, std::vector<std::string>&, const std::vector<std::string>&) const;
     bool activeCurrentTable();
 public:

@@ -70,6 +70,9 @@ void CLI::setup() {
     registerCommand("exit", [this](const std::vector<std::string>& args) {
         return exitHandler(args);
     });
+    registerCommand("show", [this](const std::vector<std::string>& args) {
+        return showHandler(args);
+    });
 }
 
 std::string CLI::useHandler(const std::vector<std::string>& args) {
@@ -351,6 +354,42 @@ std::string CLI::exitHandler(const std::vector<std::string>& args) {
     return "success";
 }
 
+std::string CLI::showHandler(const std::vector<std::string>& args) {
+    if (args.size() < 2)
+        return "error: at least one argument must be supplied";
+
+    if (args[1] == "tables") {
+        const bool verbose = args[2] == "-c";
+        std::vector<std::string> tables = db.getTableNames();
+        std::cout << "Tables " << (verbose ? ": Columns" : "") << std::endl;
+        std::cout << "----------------";
+        for (auto const &table : tables) {
+            std::cout << std::endl << table;
+            if (verbose) {
+                std::cout << " : ";
+                Table* tmpTablePtr = db.lookupTable(table);
+                if (tmpTablePtr == nullptr)
+                    continue;
+                const std::string cols = tmpTablePtr->getColumnNames();
+                for (const std::string& col : split(cols, '|'))
+                    std::cout << col << ' ';
+            }
+        }
+    } else if (args[1] == "columns") {
+        if (!activeCurrentTable()) {
+            std::cout << "error: no table selected";
+            return "";
+        }
+        std::cout << "Columns " << std::endl;
+        std::cout << "----------------";
+        const std::string cols = currentTable->getColumnNames();
+        for (const std::string& col : split(cols, '|'))
+            std::cout << '\n' << col;
+    }
+
+    return "";
+}
+
 std::string CLI::helpHandler(const std::vector<std::string>& args) {
     //use args to determine what to help with, else print list with proper format
     return "Invalid syntax: help <command> (not yet built)";
@@ -397,7 +436,6 @@ void CLI::toLowerCase(std::string& str) {
     for (char& c : str)
         c = std::tolower(static_cast<unsigned char>(c));
 }
-
 
 bool CLI::activeCurrentTable() {
     return currentTable != nullptr;
