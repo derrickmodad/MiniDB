@@ -93,5 +93,20 @@ void Database::appendTable(std::string& tableInfo) {
     tables.emplace(splitTabInfo[0], Table(splitTabInfo[0], columns));
 }
 
+bool Database::dropTable(const std::string& tableName) {
+    auto it = tables.find(tableName);
+    if (it == tables.end()) {
+        return false;
+    }
+    try {
+        std::filesystem::remove(it->second.getTablePath());
+    } catch (const std::filesystem::filesystem_error& error) {
+        std::cout << "filesystem error: " << error.what() << std::endl;
+        return false;
+    }
+    tables.erase(it);
+    return true;
+}
+
 
 

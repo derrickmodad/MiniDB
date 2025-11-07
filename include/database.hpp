@@ -22,6 +22,7 @@ public:
     std::vector<std::string> getTableNames() const;
     bool saveTableFile();
     void appendTable(std::string&);
+    bool dropTable(const std::string&);
 };
 
 #endif //DATABASE_HPP
