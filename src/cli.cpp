@@ -134,11 +134,21 @@ std::string CLI::removeHandler(const std::vector<std::string>& args) {
     if (args.size() != 2)
         return "syntax error - expected: remove <table name>";
 
-    if (args[1] == currentTable->getTableName())
+    if (db.lookupTable(args[1]) == nullptr)
+        return "error: table not found";
+
+    std::cout << "warning: permanently remove table " << args[1] << "? (remove/cancel)\n> ";
+    std::string confirm;
+    std::getline(std::cin, confirm);
+    toLowerCase(confirm);
+    if (confirm != "remove")
+        return "remove: remove not confirmed";
+
+    if (activeCurrentTable() && args[1] == currentTable->getTableName())
         currentTable = nullptr;
 
     if (!db.dropTable(args[1]))
-        return "error: table " + args[1] + " doesn't exist";
+        return "error: removing table " + args[1];
 
     return "successfully removed table " + args[1];
 }
