@@ -93,5 +93,14 @@ void Database::appendTable(std::string& tableInfo) {
     tables.emplace(splitTabInfo[0], Table(splitTabInfo[0], columns));
 }
 
+bool Database::dropTable(const std::string& tableName) {
+    auto it = tables.find(tableName);
+    if (it == tables.end()) {
+        return false;
+    }
+    tables.erase(it);
+    return true;
+}
+
 
 
