@@ -55,6 +55,9 @@ void CLI::setup() {
     registerCommand("create", [this](const std::vector<std::string>& args) {
         return createHandler(args);
     });
+    registerCommand("remove", [this](const std::vector<std::string>& args) {
+        return removeHandler(args);
+    });
     registerCommand("insert", [this](const std::vector<std::string>& args) {
         return insertHandler(args);
     });
@@ -125,6 +128,19 @@ std::string CLI::createHandler(const std::vector<std::string>& args) {
     //add table to table map
     db.appendTable(tableInfo);
     return "successfully created " + args[1];
+}
+
+std::string CLI::removeHandler(const std::vector<std::string>& args) {
+    if (args.size() != 2)
+        return "syntax error - expected: remove <table name>";
+
+    if (args[1] == currentTable->getTableName())
+        currentTable = nullptr;
+
+    if (!db.dropTable(args[1]))
+        return "error: table " + args[1] + " doesn't exist";
+
+    return "successfully removed table " + args[1];
 }
 
 //TODO: add an easy mode for inserting
@@ -385,6 +401,8 @@ std::string CLI::showHandler(const std::vector<std::string>& args) {
         const std::string cols = currentTable->getColumnNames();
         for (const std::string& col : split(cols, '|'))
             std::cout << '\n' << col;
+    } else {
+        return "error: unknown command";
     }
 
     return "";

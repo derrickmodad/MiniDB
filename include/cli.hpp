@@ -28,6 +28,7 @@ private:
     //table management
     std::string useHandler(const std::vector<std::string> &);
     std::string createHandler(const std::vector<std::string> &);
+    std::string removeHandler(const std::vector<std::string> &);
 
     //record management
     std::string insertHandler(const std::vector<std::string>&);
