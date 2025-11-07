@@ -67,6 +67,10 @@ void Table::updateWhere(std::function<bool(const Record &)> comparator, std::fun
     }
 }
 
+std::string Table::getTablePath() {
+    return tableFile;
+}
+
 std::string Table::getTableName() {
     return tableName;
 }

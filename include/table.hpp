@@ -38,6 +38,7 @@ public:
     int deleteWhere(std::function<bool(const Record&)> comparator);
     void updateWhere(std::function<bool(const Record&)> comparator, std::function<void(Record&)> updater);
 
+    std::string getTablePath();
     std::string getTableName();
     std::string getColumnNames();
     std::vector<Column> getColumns();
